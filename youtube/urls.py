@@ -21,5 +21,5 @@ from api.views import YoutubeVideoList
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('channel/<str:channel_id>', get_channel_videos),
-    path('videos',YoutubeVideoList.as_view())
+    path('videos', YoutubeVideoList.as_view())
 ]
