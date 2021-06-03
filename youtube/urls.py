@@ -17,8 +17,25 @@ from django.contrib import admin
 from django.urls import path
 from api.fetch_youtube_data import get_channel_videos
 from api.views import YoutubeVideoList
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+
+class RootView(APIView):
+    """
+    RESTFul Documentation of my app
+    """
+
+    def get(self, request, *args, **kwargs):
+        api_root = {'fetch data': request.build_absolute_uri('channel/UCcRkS0t0Ss-RQ3wJd6n_2Mg'),
+                    'filter videos': request.build_absolute_uri('videos'),
+
+                    }
+        return Response(api_root)
+
 
 urlpatterns = [
+    path('', RootView.as_view()),
     path('admin/', admin.site.urls),
     path('channel/<str:channel_id>', get_channel_videos),
     path('videos', YoutubeVideoList.as_view())

@@ -38,7 +38,8 @@ class YoutubeVideoSerializer(serializers.ModelSerializer):
             'like_count',
             'dislike_count',
             'favorite_count',
-            'comment_count'
+            'comment_count',
+            'performance',
         )
 
 
@@ -52,6 +53,9 @@ class YoutubeVideoList(generics.ListAPIView):
         """
         queryset = YoutubeVideo.objects.all()
         tag = self.request.query_params.get('tag', None)
+        performance = self.request.query_params.get('performance', None)
         if tag is not None:
             queryset = queryset.filter(tags__name=tag)
+        if performance is not None:
+            queryset = queryset.filter(performance__gte=performance)
         return queryset

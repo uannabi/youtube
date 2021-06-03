@@ -2,7 +2,7 @@ from googleapiclient.discovery import build
 from api.models import YoutubeChannel, YoutubeVideo
 from django.http import HttpResponse
 
-api_key = "API_KYE"
+api_key = "AIzaSyAwqoA4BmlRaXWPU-v4ZqsOOB3kICxu8aE"
 youtube = build('youtube', 'v3', developerKey=api_key)
 
 
