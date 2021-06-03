@@ -27,7 +27,7 @@ class RootView(APIView):
     """
 
     def get(self, request, *args, **kwargs):
-        api_root = {'fetch data': request.build_absolute_uri('channel/UCcRkS0t0Ss-RQ3wJd6n_2Mg'),
+        api_root = {'fetch data': request.build_absolute_uri('channel/'),
                     'filter videos': request.build_absolute_uri('videos'),
 
                     }
