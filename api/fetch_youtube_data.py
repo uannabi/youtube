@@ -2,9 +2,11 @@ from googleapiclient.discovery import build
 from api.models import YoutubeChannel, YoutubeVideo
 from django.http import HttpResponse
 
-api_key = "AIzaSyAwqoA4BmlRaXWPU-v4ZqsOOB3kICxu8aE"
+api_key = "API_KYE"
 youtube = build('youtube', 'v3', developerKey=api_key)
-channel_id = 'UCcRkS0t0Ss-RQ3wJd6n_2Mg'
+
+
+# channel_id = 'UCcRkS0t0Ss-RQ3wJd6n_2Mg'
 
 
 def get_videos_stats(video_ids, channel_id):
@@ -24,20 +26,43 @@ def get_videos_stats(video_ids, channel_id):
 
         title = res['items'][0]['snippet']['title']
         published_at = res['items'][0]['snippet']['publishedAt']
-        tags = res['items'][0]['snippet']['tags']
+        try:
+            tags = res['items'][0]['snippet']['tags']
+        except KeyError:
+            tags = []
         # print(tags)
-        view_count = res['items'][0]['statistics']['viewCount']
-        like_count = res['items'][0]['statistics']['likeCount']
-        dislike_count = res['items'][0]['statistics']['dislikeCount']
-        favorite_count = res['items'][0]['statistics']['favoriteCount']
-        comment_count = res['items'][0]['statistics']['commentCount']
+        print(title)
+        try:
+            view_count = res['items'][0]['statistics']['viewCount']
+        except KeyError:
+            view_count = 0
+        try:
+            like_count = res['items'][0]['statistics']['likeCount']
+        except KeyError:
+            like_count = 0
+        try:
+            dislike_count = res['items'][0]['statistics']['dislikeCount']
+        except KeyError:
+            dislike_count = 0
+        try:
+            favorite_count = res['items'][0]['statistics']['favoriteCount']
+        except KeyError:
+            favorite_count = 0
+        try:
+            comment_count = res['items'][0]['statistics']['commentCount']
+        except KeyError:
+            comment_count = 0
 
         # print(tags)
         if YoutubeVideo.objects.filter(channel=channel_object, video_id=video_id).exists():
-
+            previous_view_count = YoutubeVideo.objects.filter(channel=channel_object,
+                                                              video_id=video_id).first().view_count
+            increased_view_count = int(view_count) - previous_view_count
             YoutubeVideo.objects.filter(channel=channel_object, video_id=video_id).update(
                 title=title,
                 published_at=published_at,
+                previous_view_count=previous_view_count,
+                increased_view_count = increased_view_count,
                 view_count=view_count, like_count=like_count,
                 dislike_count=dislike_count,
                 favorite_count=favorite_count,
@@ -52,6 +77,8 @@ def get_videos_stats(video_ids, channel_id):
                                         comment_count=comment_count)
         if tags:
             YoutubeVideo.objects.filter(channel=channel_object, video_id=video_id).first().tags.set(*tags)
+
+    channel_object.save()
 
 
 def get_channel_videos(request, channel_id):
